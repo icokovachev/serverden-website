@@ -33,38 +33,6 @@ ServerDen focuses on practical, production-oriented technical content:
 - Architecture diagrams
 - Code snippet enhancements
 
-## Deployment
-
-Primary deployment target:
-
-```txt
-Cloudflare Pages
-```
-
-Recommended Pages settings:
-
-```txt
-Framework preset: Astro
-Build command: npm run build
-Build output directory: dist
-Node.js version: 22
-```
-
-Optional environment variable:
-
-```txt
-SITE=https://your-production-domain.example
-```
-
-Set `SITE` in Cloudflare Pages so Astro can generate absolute URLs and enable the
-sitemap integration in production builds.
-
-Future hosting options:
-
-- Kubernetes
-- Docker
-- Self-hosted infrastructure
-
 ## License
 
 MIT
