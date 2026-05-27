@@ -1,0 +1,185 @@
+---
+title: "Install K3s Cluster on Proxmox"
+description: "A minimal K3s installation guide for lab environments."
+topic: kubernetes
+pubDate: 2026-05-28
+tags:
+  - kubernetes
+  - k3s
+  - proxmox
+  - linux
+featured: true
+draft: false
+private: false
+---
+
+## Overview
+
+This guide demonstrates how to deploy a lightweight K3s Kubernetes cluster on Proxmox VE using Ubuntu virtual machines.
+
+The setup is designed for:
+
+- homelab environments
+- testing and development
+- lightweight Kubernetes workloads
+- CI/CD experimentation
+
+## Architecture
+
+| Role | Hostname | IP Address | Specs |
+|---|---|---|---|
+| Control Plane | k3s-master-01 | 192.168.1.10 | 2 vCPU / 4GB RAM |
+| Worker Node | k3s-worker-01 | 192.168.1.11 | 2 vCPU / 4GB RAM |
+| Worker Node | k3s-worker-02 | 192.168.1.12 | 2 vCPU / 4GB RAM |
+
+## Requirements
+
+- Proxmox VE installed
+- Ubuntu 24.04 LTS VM template
+- Static IP addresses
+- Internet connectivity
+- SSH access
+
+## Create Virtual Machines
+
+Recommended VM settings:
+
+| Setting | Value |
+|---|---|
+| OS | Ubuntu Server 24.04 |
+| CPU | 2 vCPU |
+| Memory | 4096 MB |
+| Disk | 32 GB |
+| Network | VirtIO |
+
+Clone the template for:
+
+- master node
+- worker nodes
+
+## Configure Hosts File
+
+Update `/etc/hosts` on all nodes:
+
+```txt
+192.168.1.10 k3s-master-01
+192.168.1.11 k3s-worker-01
+192.168.1.12 k3s-worker-02
+```
+
+## Install K3s Server
+
+Run on the master node:
+
+```bash
+curl -sfL https://get.k3s.io | sh -
+```
+
+Verify installation:
+
+```bash
+sudo kubectl get nodes
+```
+
+Expected output:
+
+```txt
+NAME             STATUS   ROLES                  AGE   VERSION
+k3s-master-01    Ready    control-plane,master   1m    v1.31.x
+```
+
+## Retrieve Node Token
+
+Get the cluster join token:
+
+```bash
+sudo cat /var/lib/rancher/k3s/server/node-token
+```
+
+Copy the token.
+
+## Join Worker Nodes
+
+Run on each worker node:
+
+```bash
+curl -sfL https://get.k3s.io | K3S_URL=https://192.168.1.10:6443 K3S_TOKEN=YOUR_TOKEN sh -
+```
+
+## Verify Cluster
+
+Run on the master node:
+
+```bash
+sudo kubectl get nodes
+```
+
+Expected result:
+
+```txt
+NAME               STATUS   ROLES                  AGE
+k3s-master-01      Ready    control-plane,master   5m
+k3s-worker-01      Ready    <none>                 2m
+k3s-worker-02      Ready    <none>                 2m
+```
+
+## Configure kubectl Access
+
+Copy kubeconfig locally:
+
+```bash
+mkdir -p ~/.kube
+sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+sudo chown $USER:$USER ~/.kube/config
+```
+
+## Deploy Test Workload
+
+```bash
+kubectl create deployment nginx --image=nginx
+kubectl expose deployment nginx --port=80 --type=LoadBalancer
+```
+
+Verify:
+
+```bash
+kubectl get pods
+kubectl get svc
+```
+
+## Troubleshooting
+
+### Node Not Joining
+
+Check:
+
+- firewall rules
+- connectivity to port `6443`
+- token correctness
+
+### Service Pending External IP
+
+K3s does not include a cloud load balancer by default.
+
+Recommended solutions:
+
+- MetalLB
+- Traefik ingress
+- NodePort services
+
+## Next Steps
+
+Recommended additions:
+
+- Longhorn storage
+- MetalLB
+- ArgoCD
+- Prometheus + Grafana
+- cert-manager
+- Traefik ingress
+
+## References
+
+- https://k3s.io/
+- https://www.proxmox.com/
+- https://docs.k3s.io/

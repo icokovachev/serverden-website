@@ -1,0 +1,63 @@
+---
+import "../styles/global.css";
+import { topics } from "../data/topics";
+
+const {
+  title = "ServerDen",
+  description = "Infrastructure, Kubernetes, automation testing, scripting and systems engineering tutorials.",
+} = Astro.props;
+
+const pageTitle = title === "ServerDen" ? title : `${title} | ServerDen`;
+const navTopicSlugs = ["homelab", "linux", "kubernetes", "automation", "testing"];
+const navTopics = navTopicSlugs
+  .map((slug) => topics.find((topic) => topic.slug === slug))
+  .filter((topic): topic is (typeof topics)[number] => Boolean(topic));
+const navLabels: Record<string, string> = {
+  linux: "Linux Servers",
+  testing: "Auto Testing",
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{pageTitle}</title>
+  </head>
+
+  <body>
+    <div class="site-shell">
+      <header class="site-header">
+        <nav class="site-nav" aria-label="Primary navigation">
+          <a href="/" class="brand-link" aria-label="ServerDen home">
+            <span class="brand-mark">SD</span>
+            <span>ServerDen</span>
+          </a>
+
+          <div class="nav-links">
+            {
+              navTopics.map((topic) => (
+                <a href={`/${topic.slug}`}>{navLabels[topic.slug] ?? topic.shortTitle}</a>
+              ))
+            }
+            <a href="/about-me">About me</a>
+          </div>
+      </nav>
+      </header>
+
+      <main class="main-shell">
+        <slot />
+      </main>
+
+      <footer class="site-footer">
+        <span>ServerDen</span>
+        <span>Systems engineering field notes since {new Date().getFullYear()}</span>
+      </footer>
+    </div>
+  </body>
+</html>

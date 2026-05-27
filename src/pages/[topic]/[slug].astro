@@ -1,0 +1,60 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getTopic } from "../../data/topics";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("articles", ({ data }) => !data.draft && !data.private);
+
+  return posts.flatMap((post) => {
+    const topic = getTopic(post.data.topic);
+
+    if (!topic) {
+      return [];
+    }
+
+    return [
+      {
+        params: { topic: topic.slug, slug: post.id.replace(/\.(md|mdx)$/, "") },
+        props: { post, topic },
+      },
+    ];
+  });
+}
+
+const { post, topic } = Astro.props;
+const { Content } = await render(post);
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat("en", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
+---
+
+<BaseLayout title={post.data.title} description={post.data.description}>
+  <article class="article-shell">
+    <a class="back-link" href={`/${topic.slug}`}>Back to {topic.title}</a>
+
+    <header class="article-header" style={`--accent: ${topic.accent}`}>
+      <p class="eyebrow">{topic.title}</p>
+      <h1>{post.data.title}</h1>
+      <p>{post.data.description}</p>
+      <div class="article-meta">
+        <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+        {
+          post.data.updatedDate && (
+            <span>Updated {formatDate(post.data.updatedDate)}</span>
+          )
+        }
+      </div>
+      <div class="topic-tags large">
+        {post.data.tags.map((tag) => <span>{tag}</span>)}
+      </div>
+    </header>
+
+    <div class="prose prose-invert article-content">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>

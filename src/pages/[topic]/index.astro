@@ -1,0 +1,68 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { topics } from "../../data/topics";
+
+export function getStaticPaths() {
+  return topics.map((topic) => ({
+    params: { topic: topic.slug },
+    props: { topic },
+  }));
+}
+
+const { topic } = Astro.props;
+const articles = (await getCollection("articles", ({ data }) => !data.draft && !data.private))
+  .filter((article) => article.data.topic === topic.slug)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const articleSlug = (id: string) => id.replace(/\.(md|mdx)$/, "");
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
+---
+
+<BaseLayout title={topic.title} description={topic.description}>
+  <section class="topic-hero" style={`--accent: ${topic.accent}`}>
+    <p class="eyebrow">Topic</p>
+    <h1>{topic.title}</h1>
+    <p>{topic.description}</p>
+    <div class="topic-tags large">
+      {topic.tags.map((tag) => <span>{tag}</span>)}
+    </div>
+  </section>
+
+  <section class="section-block">
+    <div class="section-heading compact">
+      <p class="eyebrow">Guides</p>
+      <h2>{articles.length ? "Available now" : "Planned notes"}</h2>
+    </div>
+
+    {
+      articles.length ? (
+        <div class="article-grid">
+          {articles.map((article) => (
+            <a class="article-card" href={`/${topic.slug}/${articleSlug(article.id)}`}>
+              <div>
+                <span class="article-topic">{topic.title}</span>
+                <h3>{article.data.title}</h3>
+                <p>{article.data.description}</p>
+              </div>
+              <time datetime={article.data.pubDate.toISOString()}>{formatDate(article.data.pubDate)}</time>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <div class="empty-state">
+          <h3>{topic.title} notes are queued up.</h3>
+          <p>
+            This hub is ready for tutorials, checklists, diagrams, and field notes
+            as the ServerDen library grows.
+          </p>
+        </div>
+      )
+    }
+  </section>
+</BaseLayout>

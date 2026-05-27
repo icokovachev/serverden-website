@@ -1,0 +1,77 @@
+---
+import { Image } from "astro:assets";
+import profilePhoto from "../assets/about-me-photo.jpeg";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const coreSkills = [
+  "Kubernetes & K3s",
+  "Terraform & Ansible",
+  "Azure DevOps & CI/CD",
+  "GitOps & ArgoCD",
+  "Grafana LGTM Stack",
+  "Linux & on-prem infrastructure",
+  "Automation testing",
+  "Monitoring & observability",
+];
+---
+
+<BaseLayout
+  title="About me"
+  description="Hristo Kovachev, DevOps Engineer with a background in automation testing, passionate homelabber and learner."
+>
+  <section class="about-page">
+    <div class="about-intro">
+      <div class="about-copy">
+        <p class="eyebrow">About me</p>
+        <h1>Hristo Kovachev</h1>
+        <p>
+          I am a DevOps Engineer with a background in automation testing, focused
+          on practical infrastructure, reliable delivery, and continuous
+          learning.
+        </p>
+        <p>
+          ServerDen is where I share field notes from homelab builds,
+          Kubernetes work, Linux administration, and the automation patterns I
+          keep coming back to.
+        </p>
+        <p>
+          My work centers on Kubernetes, observability, infrastructure as code,
+          CI/CD, and on-prem platforms. I like building systems that are stable,
+          observable, and easy for teams to work with.
+        </p>
+
+        <div class="about-actions">
+          <a
+            class="button"
+            href="https://www.linkedin.com/in/hristo-kovachev-123124195/"
+            rel="me noopener noreferrer"
+            target="_blank"
+          >
+            LinkedIn
+          </a>
+          <a class="button secondary" href="/">ServerDen notes</a>
+        </div>
+      </div>
+
+      <aside class="about-photo-panel signal-panel" aria-label="Profile photo">
+        <Image
+          src={profilePhoto}
+          alt="Portrait of Hristo Kovachev"
+          class="about-photo"
+          sizes="(max-width: 920px) 100vw, 360px"
+        />
+      </aside>
+    </div>
+
+    <section class="about-skills signal-panel" aria-labelledby="about-skills-title">
+      <div class="panel-header">
+        <span id="about-skills-title">core skills</span>
+        <span>stack</span>
+      </div>
+
+      <div class="tag-list about-tag-list">
+        {coreSkills.map((skill) => <span>{skill}</span>)}
+      </div>
+    </section>
+  </section>
+</BaseLayout>
