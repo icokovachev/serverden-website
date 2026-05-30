@@ -567,9 +567,82 @@ a {
   border-radius: 8px;
 }
 
+.article-content .expected-output {
+  border: 1px solid rgba(244, 242, 234, 0.1);
+  border-radius: 8px;
+  background: rgba(13, 15, 12, 0.75);
+  color: var(--muted);
+  font-style: italic;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  margin: 0.5rem 0 1rem;
+  padding: 0.85rem 1rem;
+}
+
 .article-content :where(table) {
   display: block;
   overflow-x: auto;
+}
+
+.article-content .docker-tabs {
+  margin: 1rem 0 1.5rem;
+  border: 1px solid rgba(244, 242, 234, 0.12);
+  border-radius: 10px;
+  background: rgba(21, 26, 22, 0.78);
+  overflow: hidden;
+}
+
+.article-content .docker-tabs input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.article-content .docker-tabs-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+  border-bottom: 1px solid rgba(244, 242, 234, 0.12);
+  background: rgba(13, 15, 12, 0.6);
+}
+
+.article-content .docker-tabs-switch label {
+  border: 1px solid rgba(244, 242, 234, 0.18);
+  border-radius: 999px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 0.38rem 0.75rem;
+  transition:
+    color 140ms ease,
+    border-color 140ms ease,
+    background 140ms ease;
+}
+
+#docker-os-windows:checked ~ .docker-tabs-switch label[for="docker-os-windows"],
+#docker-os-linux:checked ~ .docker-tabs-switch label[for="docker-os-linux"],
+#docker-os-macos:checked ~ .docker-tabs-switch label[for="docker-os-macos"] {
+  border-color: rgba(94, 234, 212, 0.55);
+  background: rgba(94, 234, 212, 0.16);
+  color: var(--text);
+}
+
+.article-content .docker-tab-panel {
+  display: none;
+  padding: 14px 14px 10px;
+}
+
+#docker-os-windows:checked ~ .docker-panel-windows,
+#docker-os-linux:checked ~ .docker-panel-linux,
+#docker-os-macos:checked ~ .docker-panel-macos {
+  display: block;
+}
+
+.article-content .docker-tab-panel h3 {
+  margin-top: 2px;
 }
 
 @media (max-width: 920px) {
